@@ -114,15 +114,15 @@
 </head>
 <body>
   <div class="container">
-    <h1>Airdrop Calculator</h1>
+    <h1>Derive X Etherfi Event</h1>
     <label for="airdropPercentage">Total Airdrop Allocation (The community average has been around 7.5% historically</label>
-    <input type="number" id="airdropPercentage" placeholder="Enter allocation percentage (e.g., 5, 7, 10)" />
+    <input type="number" id="airdropPercentage" placeholder="Enter allocation percentage (e.g., 7.5%)" />
 
     <label for="fdv">Speculated Fully Diluted Valuation (FDV in Millions $)</label>
     <input type="number" id="fdv" placeholder="Enter FDV in millions (e.g., 135, 450)" />
 
     <label for="participants">Number of Participants</label>
-    <input type="number" id="participants" placeholder="this event is limited to 1000 users" />
+    <input type="number" id="participants" placeholder="This event is limited to 1000 users" />
 
     <button onclick="calculate()">Calculate</button>
 
@@ -171,7 +171,7 @@
       const sensitivityTable = document.getElementById("sensitivityTable");
 
       const fdvInput = parseFloat(document.getElementById("fdv").value) * 1000000;
-      const fdvValues = [fdvInput * 0.9, fdvInput, fdvInput * 1.1];
+      const fdvValues = [fdvInput * 0.8, fdvInput, fdvInput * 1.2];
 
       let tableHTML = `
         <h3>Sensitivity Analysis (FDV ± 10%)</h3>
