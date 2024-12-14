@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Airdrop Calculator</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #1a1a2e;
+      color: #eaeaea;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #16213e;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      color: #00d4ff;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+      color: #00d4ff;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: none;
+      border-radius: 5px;
+      background-color: #1a1a2e;
+      color: #eaeaea;
+      font-size: 16px;
+    }
+
+    input:focus {
+      outline: 2px solid #00d4ff;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #fff;
+      background-color: #00d4ff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #0099cc;
+    }
+
+    .results {
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 5px;
+      background-color: #0f3460;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .results h3 {
+      margin-top: 0;
+      color: #00d4ff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      border: 1px solid #eaeaea;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background: #16213e;
+    }
+
+    .maintained {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .maintained a {
+      color: #00d4ff;
+      text-decoration: none;
+    }
+
+    .maintained a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Airdrop Calculator</h1>
+    <label for="airdropPercentage">Airdrop Allocation (%)</label>
+    <input type="number" id="airdropPercentage" placeholder="Enter allocation percentage (e.g., 5, 7, 10)" />
+
+    <label for="fdv">Fully Diluted Valuation (FDV in Millions $)</label>
+    <input type="number" id="fdv" placeholder="Enter FDV in millions (e.g., 135, 450)" />
+
+    <label for="participants">Number of Participants</label>
+    <input type="number" id="participants" placeholder="Enter the number of participants (e.g., 1000)" />
+
+    <button onclick="calculate()">Calculate</button>
+
+    <div class="results" id="results" style="display: none;"></div>
+    <div class="results" id="sensitivityTable" style="display: none;"></div>
+  </div>
+
+  <div class="maintained">
+    Maintained by <a href="https://x.com/Dustybeerbong" target="_blank">@Dustybeerbong on X</a>
+  </div>
+
+  <script>
+    function calculate() {
+      const totalSupply = 1000000000; // Total supply of tokens
+      const airdropPercentage = parseFloat(document.getElementById("airdropPercentage").value);
+      const fdv = parseFloat(document.getElementById("fdv").value) * 1000000; // Convert FDV to full value
+      const participants = parseInt(document.getElementById("participants").value);
+
+      if (!airdropPercentage || !fdv || !participants) {
+        document.getElementById("results").innerHTML = "<p style='color: red;'>Please fill in all fields correctly.</p>";
+        document.getElementById("results").style.display = "block"; // Show the error message
+        document.getElementById("sensitivityTable").style.display = "none"; // Hide sensitivity table
+        return;
+      }
+
+      const totalAirdropTokens = (totalSupply * airdropPercentage) / 100;
+      const allocationTokens = totalAirdropTokens * 0.025;
+      const tokenPrice = fdv / totalSupply;
+      const maxTotalValue = allocationTokens * tokenPrice;
+      const maxIndividualValue = maxTotalValue / participants;
+
+      document.getElementById("results").style.display = "block"; // Show the results
+      document.getElementById("results").innerHTML = `
+        <h3>Results:</h3>
+        <p><strong>Total Airdrop Tokens:</strong> ${totalAirdropTokens.toLocaleString()} tokens</p>
+        <p><strong>Tokens Allocated to 2.5%:</strong> ${allocationTokens.toLocaleString()} tokens</p>
+        <p><strong>Max Total Value:</strong> $${maxTotalValue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+        <p><strong>Max Individual Value:</strong> $${maxIndividualValue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} per person</p>
+      `;
+
+      document.getElementById("sensitivityTable").style.display = "block"; // Show the sensitivity table
+      generateSensitivityTable(allocationTokens, participants);
+    }
+
+    function generateSensitivityTable(allocationTokens, participants) {
+      const sensitivityTable = document.getElementById("sensitivityTable");
+
+      const fdvInput = parseFloat(document.getElementById("fdv").value) * 1000000;
+      const fdvValues = [fdvInput * 0.9, fdvInput, fdvInput * 1.1];
+
+      let tableHTML = `
+        <h3>Sensitivity Analysis (FDV ± 10%)</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>FDV ($)</th>
+              <th>Max Total Value ($)</th>
+              <th>Max Individual Value ($)</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      fdvValues.forEach(fdv => {
+        const tokenPrice = fdv / 1000000000;
+        const maxTotalValue = allocationTokens * tokenPrice;
+        const maxIndividualValue = maxTotalValue / participants;
+
+        tableHTML += `
+          <tr>
+            <td>${fdv.toLocaleString()}</td>
+            <td>$${maxTotalValue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+            <td>$${maxIndividualValue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+          </tr>
+        `;
+      });
+
+      tableHTML += `
+          </tbody>
+        </table>
+      `;
+
+      sensitivityTable.innerHTML = tableHTML;
+    }
+  </script>
+</body>
+</html>
